@@ -1,14 +1,14 @@
 
-import javax.swing.text.html.Option;
+import java.io.*;
 import java.util.ArrayList;
 
 
-public class MatchBox {
+public class MatchBox implements Serializable  {
 
 	private static final int staringPebbles= 10;
 
 
-	private class Option {
+	private class Option implements Serializable {
 		Move move;
 		int pebbles;
 
@@ -63,7 +63,7 @@ public class MatchBox {
 		for(Option o:options) totalPebbles+=o.getPebbles();
 		r=Test.random.rand.nextInt()%totalPebbles;
 		for(Option o:options){
-			if(r<=o.getPebbles()){
+			if(r<o.getPebbles()){
 				lastUsed=o;
 				return o.getMove();
 			}
@@ -91,7 +91,7 @@ public class MatchBox {
 
 	@Override
 	public String toString() {
-		return ((Integer) state).toString()+"->"+options.toString()+'/'+lastUsed.getMove()+'\n';
+		return ((Integer) state).toString()+"->"+options.toString()+'/'+lastUsed +'\n';
 	}
 
 }
