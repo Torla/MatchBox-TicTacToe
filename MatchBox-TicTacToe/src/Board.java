@@ -1,10 +1,13 @@
+import javafx.print.Collation;
+
 import static java.lang.System.out;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
-import java.util.stream.IntStream;
-import java.lang.Math.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class Board {
     private int m[][] = new int[3][3];
@@ -71,7 +74,7 @@ public class Board {
     }
 
 
-    public void writeMove(int i, int j, char player){
+    private Board writeMove(int i, int j, char player){
         switch (player){
             case ' ':
                 m[i][j]=0;
@@ -83,8 +86,13 @@ public class Board {
                 m[i][j]=2;
                 break;
         }
+        return this;
     }
-    private void rotate(int times) {
+    public Board writeMove(Move move,char player){
+    	return writeMove(move.getI(),move.getJ(),player);
+    }
+
+	private void rotate(int times) {
 	    int temp;
 	    if(times==0) return;
 	    final int len = m.length;
@@ -136,7 +144,7 @@ public class Board {
     private Board normalized(){
     	Board ret = new Board(this.m);
     	Board temp = new Board(this.m);
-	    for(int i=0;i<4;i++){
+	    for(int i=0;i<3;i++){
 		    temp.rotate();
 		    if(temp.isLess(ret)) ret.copy(temp);
 	    }
@@ -144,7 +152,7 @@ public class Board {
 	    temp.flip();
 	    if(temp.isLess(ret)) ret = new Board(temp.m);
 
-	    for(int i=0;i<4;i++){
+	    for(int i=0;i<3;i++){
 		    temp.rotate();
 		    if(temp.isLess(ret)) ret = new Board(temp.m);
 	    }
@@ -172,20 +180,89 @@ public class Board {
 		return this.hashCode()==b.hashCode();
 	}
 
-	public static void test(){
-		Board b = new Board();
-		b.writeMove(0,0,'x');
-		b.writeMove(0,2,'o');
-		b.writeMove(1,1,'x');
-		b.writeMove(0,1,'x');
-		Board c = new Board(b.hashCode());
-		c.flip();
-		c.rotate();
-		out.println(c);
-		List<Board> l = new ArrayList<>();
-		l.add(b);
-		out.println(l.contains(c));
+	public int gameState(){
+		int count,count2;
+    	ArrayList<Integer> l= new ArrayList<>();
+    	int[][] magicSquare={{8,1,6},{3,5,7},{4,9,2}};
+		for(int i=0;i<3;i++){
+			count=0;
+			count2=0;
+			for(int j=0;j<3;j++){
+				count+=m[i][j]*magicSquare[i][j];
+				count2+=m[j][i]*magicSquare[j][i];
+			}
+			l.add(count);
+			l.add(count2);
+		}
+		l.add((m[0][0] * magicSquare[0][0]) + (m[1][1] * magicSquare[1][1]) + (m[2][2] * magicSquare[2][2]));
+		l.add((m[2][0] * magicSquare[2][0]) + (m[1][1] * magicSquare[1][1]) + (m[0][2] * magicSquare[0][2]));
+		if(l.contains(15)) return 1;
+		if(l.contains(30)) return 2;
+		else return 0;
 
+	}
+	public boolean isDraw(){
+		for(int[] row:m){
+			for(int cell:row){
+				if(cell==0) return false;
+			}
+		}
+		return true;
+	}
 
+	private static void generateAllR(int i, int j,Board b,HashSet<Board> retSet){
+		Board b2;
+		if(j>2){
+			j=0;
+			i++;
+		}
+		if (i > 2) return;
+		char[] ch = {' ','o','x'};
+		for(char c:ch) {
+			b2 = new Board(b.m);
+			b2.writeMove(i, j, c);
+			if(b2.gameState()!=0 || b2.isDraw()) continue;
+			retSet.add(b2);
+			generateAllR(i, j + 1, b2, retSet);
+		}
+
+	}
+	public static HashSet<Board> generateAll(){
+		HashSet<Board> retSet=new HashSet<>();
+		Board b=new Board();
+		generateAllR(0,0,b,retSet);
+		return retSet;
+	}
+	public static HashSet<Integer> generateAllHash() {
+		return generateAll().stream().map((x)->x.hashCode()).collect(Collectors.toCollection(HashSet<Integer>::new));
+
+	}
+	public ArrayList<Move> possibleMoves(){
+		ArrayList<Move> ret= new ArrayList<>();
+		ArrayList<Integer> states= new ArrayList<>();
+		for(int i=0;i<3;i++){
+			for(int j=0;j<3;j++){
+				if(m[i][j]==0){
+					Move m= new Move(i,j);
+					Board b2 = new Board(this.m).writeMove(m,'x');
+					if(!states.contains(b2.hashCode())){
+						states.add(b2.hashCode());
+						ret.add(m);
+					}
+				}
+			}
+		}
+
+		return ret;
+	}
+
+	static void test(){
+		Board b = new Board()
+				.writeMove(0,0,'x')
+				.writeMove(1,1,'x')
+				.writeMove(0,2,'x')
+				.writeMove(0,1,'x');
+		out.println(b);
+		out.println(b.possibleMoves());
 	}
 }
