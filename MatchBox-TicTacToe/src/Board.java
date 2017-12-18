@@ -49,6 +49,9 @@ public class Board {
 		    }
 	    }
     }
+    public Board (Board b){
+		this.copy(b);
+    }
 
     @Override
     public String toString() {
@@ -141,7 +144,7 @@ public class Board {
     	if(b.firstMetric()==this.firstMetric()) return this.secondMetric() < b.secondMetric();
     	else return this.firstMetric() < b.firstMetric();
     }
-    private Board normalized(){
+    public Board normalized(){
     	Board ret = new Board(this.m);
     	Board temp = new Board(this.m);
 	    for(int i=0;i<3;i++){
@@ -184,6 +187,7 @@ public class Board {
 		int count,count2;
     	ArrayList<Integer> l= new ArrayList<>();
     	int[][] magicSquare={{8,1,6},{3,5,7},{4,9,2}};
+    	if(isDraw()) return 3;
 		for(int i=0;i<3;i++){
 			count=0;
 			count2=0;
@@ -262,7 +266,6 @@ public class Board {
 				.writeMove(1,1,'x')
 				.writeMove(0,2,'x')
 				.writeMove(0,1,'x');
-		out.println(b);
-		out.println(b.possibleMoves());
+		out.println(generateAllHash().size());
 	}
 }

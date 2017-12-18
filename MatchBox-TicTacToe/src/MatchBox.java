@@ -60,8 +60,9 @@ public class MatchBox implements Serializable  {
 	public Move chooseMove(){
 		int totalPebbles=0;
 		int r;
-		for(Option o:options) totalPebbles+=o.getPebbles();
-		r=Test.random.rand.nextInt()%totalPebbles;
+		totalPebbles = getTotalPebbles(totalPebbles);
+		if(totalPebbles==0) return new Move('r');
+		r=MatchBoxBrain.random.rand.nextInt(totalPebbles);
 		for(Option o:options){
 			if(r<o.getPebbles()){
 				lastUsed=o;
@@ -72,7 +73,14 @@ public class MatchBox implements Serializable  {
 			}
 		}
 		return null;
-	};
+	}
+
+	private int getTotalPebbles(int totalPebbles) {
+		for(Option o:options) totalPebbles+=o.getPebbles();
+		return totalPebbles;
+	}
+
+	;
 
 	public void rewards(char x){
 		switch (x){
@@ -87,6 +95,7 @@ public class MatchBox implements Serializable  {
 				lastUsed.decPebbles();
 				break;
 		}
+		if (lastUsed.getPebbles()<0) lastUsed.setPebbles(0);
 	};
 
 	@Override
