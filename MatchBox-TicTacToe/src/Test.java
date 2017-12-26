@@ -7,8 +7,11 @@ import static java.lang.System.out;
 
 public class Test {
     public static void main(String[] args) {
-        MatchBoxBrain brain=MatchBoxBrain.load(args[0]);
-        out.println(brain);
+        Window window=new Window();
+        Board b = new Board();
+        b.writeMove(new Move(0,0),'x')
+            .writeMove(new Move(1,1),'o');
+        b.show(window);
 
     }
 }

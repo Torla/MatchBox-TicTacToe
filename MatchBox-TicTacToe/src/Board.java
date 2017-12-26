@@ -163,6 +163,7 @@ public class Board {
 	    return ret;
     }
 
+
 	@Override
 	public int hashCode() {
     	int hash=0;
@@ -260,6 +261,9 @@ public class Board {
 		return ret;
 	}
 
+	public void show(Window w){
+		w.show(this.m);
+	}
 	static void test(){
 		Board b = new Board()
 				.writeMove(0,0,'x')

@@ -7,13 +7,17 @@ import static java.lang.System.in;
 import static java.lang.System.out;
 
 public class Input {
+	private static int x,y;
+	private static boolean ready;
 	public static Move inputMove(){
-		int x,y;
-		Scanner s = new Scanner(System.in);
-		x = s.nextInt();
-		y = s.nextInt();
-		//s.close();
+		while(!ready);
+		ready=false;
 		return new Move(x,y);
+	}
+	public static void set(int x1,int y1){
+		x=x1;
+		y=y1;
+		ready=true;
 	}
 
 	public static void test(){
