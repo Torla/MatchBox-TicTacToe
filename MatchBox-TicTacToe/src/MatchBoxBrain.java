@@ -7,6 +7,7 @@ import java.util.HashMap;
  public class MatchBoxBrain implements Serializable{
 	private HashMap<Integer,MatchBox> matchBoxes;
 	private ArrayList<MatchBox> lastsUsed;
+	public int numMatch=1;
 	transient public static Rand random = new Rand();
 	public  MatchBoxBrain(){
 		matchBoxes = new HashMap<Integer, MatchBox>();
@@ -24,6 +25,7 @@ import java.util.HashMap;
 	}
 
 	public void reward(char x){
+		numMatch++;
 		for(MatchBox m:lastsUsed){
 			m.rewards(x);
 		}

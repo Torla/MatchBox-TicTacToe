@@ -10,7 +10,9 @@ public class Input {
 	private static int x,y;
 	private static boolean ready;
 	public static Move inputMove(){
-		while(!ready);
+		while(!ready){
+			try{Thread.sleep(10);}catch (Exception e){}
+		};
 		ready=false;
 		return new Move(x,y);
 	}

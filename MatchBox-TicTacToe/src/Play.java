@@ -33,14 +33,17 @@ public class Play {
 		switch (b.gameState()){
 			case 1:
 				out.println("You won");
+				window.message("You won ("+brain.numMatch + ")");
 				brain.reward('l');
 				break;
 			case 2:
 				out.println("You lose");
+				window.message("You lose ("+brain.numMatch + ")");
 				brain.reward('w');
 				break;
 			case 3:
 				out.println("Draw");
+				window.message("Draw ("+brain.numMatch + ")");
 				brain.reward('d');
 				break;
 		}

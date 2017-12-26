@@ -58,14 +58,17 @@ public class Window extends Frame implements WindowListener,ActionListener{
 		setSize(dim, dim);
 	}
 
+	public void message(String s){
+		JOptionPane.showMessageDialog(null,s," ",JOptionPane.PLAIN_MESSAGE);
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent e){
 		for(int i=0;i<3;i++){
 			for(int j=0;j<3;j++){
 				if(screen[i][j]==e.getSource()){
-					System.out.println(i);
-					System.out.println(j);
 					Input.set(i,j);
+					break;
 				}
 			}
 		}
