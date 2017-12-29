@@ -1,44 +1,73 @@
-import sun.awt.SunHints;
+
+
+import java.util.Arrays;
+import java.util.stream.Collector;
 
 import static java.lang.System.out;
 
-public class Train {
-	private static MatchBoxBrain brain;
+public class Train{
+
+	static MatchBoxBrain brain1,brain2;
+
+	static final int numThreads = 4;
+	private static Thread[] threads = new Thread[numThreads];
 	public static void main(String Argv[]){
-		if(Argv.length>2 && Argv[2].equals("--new")){
-			brain=new MatchBoxBrain();
-			brain.saveToDisk(Argv[0]);
+
+		for(int i=0;i<numThreads;i++) threads[i]=new Thread(new singleRun(Argv));
+		if(Argv.length>3 && Argv[3].equals("--new")){
+			brain1=new MatchBoxBrain();
+			brain2=new MatchBoxBrain();
+			brain1.saveToDisk(Argv[0]);
+			brain2.saveToDisk(Argv[1]);
 		}
-		else brain = MatchBoxBrain.load(Argv[0]);
-		for(int i=0;i< Integer.parseInt(Argv[1]);i++ ) {
-			match();
-			brain.saveToDisk(Argv[0]);
-			out.println(i);
+		else {
+			brain1 = MatchBoxBrain.load(Argv[0]);
+			brain2 = MatchBoxBrain.load(Argv[1]);
 		}
-		return;
+			for (Thread t : threads) t.start();
+			while(Arrays.stream(threads).filter(Thread::isAlive).count()!=0) try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		Train.brain1.saveToDisk(Argv[0]);
+		Train.brain2.saveToDisk(Argv[1]);
+
 	}
-	private static void match(){
+		static void match(){
 		Board b = new Board();
 		while (true){
-
-			b.writeMove(brain.move(b),'x');
+			try {
+				b.writeMove(brain1.move(b), 'x');
+			}catch (MatchBox.Resign e){
+				brain1.reward('l');
+				brain2.reward('w');
+			}
 			b=new Board(b.normalized());
 			if(b.gameState()!=0) break;
-			b.writeMove(brain.move(b),'o');
+			try {
+				b.writeMove(brain2.move(b), 'o');
+			}catch (MatchBox.Resign e){
+				brain1.reward('w');
+				brain2.reward('l');
+			}
 			b=new Board(b.normalized());
 			if(b.gameState()!=0) break;
 		}
 		switch (b.gameState()){
 			case 1:
-				brain.reward('l');
+				brain1.reward('l');
+				brain2.reward('w');
 				break;
 			case 2:
-				brain.reward('w');
+				brain1.reward('w');
+				brain2.reward('l');
 				break;
 			case 3:
-				brain.reward('d');
+				brain1.reward('d');
+				brain2.reward('d');
 				break;
 		}
-		return;
 	}
 }
+

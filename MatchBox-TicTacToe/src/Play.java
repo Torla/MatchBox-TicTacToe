@@ -1,3 +1,5 @@
+
+
 import static java.lang.System.out;
 
 public class Play {
@@ -18,8 +20,14 @@ public class Play {
 	private static void match(){
 		Board b = new Board();
 		while (true){
-
-			b.writeMove(brain.move(b),'x');
+			try {
+				b.writeMove(brain.move(b), 'x');
+			}catch (MatchBox.Resign e){
+				out.println("Resign, you won");
+				window.message("Resign, you won ("+brain.numMatch + ")");
+				brain.reward('l');
+				return;
+			}
 			b=new Board(b.normalized());
 			out.println(b);
 			b.show(window);

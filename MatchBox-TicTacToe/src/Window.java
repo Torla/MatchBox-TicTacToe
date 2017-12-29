@@ -7,7 +7,7 @@ import java.awt.event.WindowEvent;
 
 public class Window extends Frame implements WindowListener,ActionListener{
 	private JPanel jPanel;
-	private static final int dim = 1000;
+	private static final int dim = 500;
 	private Component[][] screen = new Component[3][3];
 	Font f = new Font("ciao",Font.BOLD,dim/3);
 	public Window() throws HeadlessException {
@@ -25,7 +25,7 @@ public class Window extends Frame implements WindowListener,ActionListener{
 			b.addActionListener(this);
 			screen[i][j]=b;
 		}
-		screen[i][j].setPreferredSize(new Dimension(dim/4,dim/4+1));
+		screen[i][j].setPreferredSize(new Dimension(dim/3-dim/20,dim/3-dim/20));
 		screen[i][j].setFont(f);
 		jPanel.add(screen[i][j]);
 	}
@@ -58,7 +58,7 @@ public class Window extends Frame implements WindowListener,ActionListener{
 		setSize(dim, dim);
 	}
 
-	public void message(String s){
+	void message(String s){
 		JOptionPane.showMessageDialog(null,s," ",JOptionPane.PLAIN_MESSAGE);
 	}
 
