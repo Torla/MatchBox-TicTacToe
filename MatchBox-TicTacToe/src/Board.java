@@ -188,12 +188,12 @@ public class Board {
 		int count,count2;
     	ArrayList<Integer> l= new ArrayList<>();
     	int[][] magicSquare={{8,1,6},{3,5,7},{4,9,2}};
-    	if(isDraw()) return 3;
 		for(int i=0;i<3;i++){
 			count=0;
 			count2=0;
 			for(int j=0;j<3;j++){
 				count+=m[i][j]*magicSquare[i][j];
+				
 				count2+=m[j][i]*magicSquare[j][i];
 			}
 			l.add(count);
@@ -203,6 +203,7 @@ public class Board {
 		l.add((m[2][0] * magicSquare[2][0]) + (m[1][1] * magicSquare[1][1]) + (m[0][2] * magicSquare[0][2]));
 		if(l.contains(15)) return 1;
 		if(l.contains(30)) return 2;
+		if(isDraw()) return 3;
 		else return 0;
 
 	}

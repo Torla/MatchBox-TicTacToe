@@ -56,7 +56,6 @@ public class MatchBox implements Serializable {
 
 	private int state;
 	private ArrayList<Option> options;
-	//private Option lastUsed = null; // TODO account for thread
 	private HashMap<Long,Option> lastUsed= new HashMap<>();
 
 	public MatchBox(int state) {
@@ -92,7 +91,7 @@ public class MatchBox implements Serializable {
 	;
 
 	public void rewards(char x) {
-		if(!lastUsed.containsKey(Thread.currentThread().getId())) {
+		if(!lastUsed.containsKey(Thread.currentThread().getId())) { //todo Strange bug, ugly workaround
 			System.out.println("!!!");
 			return;
 		}
@@ -100,6 +99,8 @@ public class MatchBox implements Serializable {
 		switch (x) {
 			case 'w':
 
+				o.incPebbles();
+				o.incPebbles();
 				o.incPebbles();
 				o.incPebbles();
 				break;
@@ -112,6 +113,7 @@ public class MatchBox implements Serializable {
 				break;
 		}
 		if (o.getPebbles() < 0) o.setPebbles(0);
+		if (o.getPebbles() > 1000) for(Option i:options) i.setPebbles(i.getPebbles()/2);
 		lastUsed.remove(Thread.currentThread().getId());
 	}
 
