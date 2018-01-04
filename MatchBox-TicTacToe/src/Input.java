@@ -1,16 +1,10 @@
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
-
-import java.io.IOException;
-import java.util.Scanner;
-
-import static java.lang.System.in;
 import static java.lang.System.out;
 
 
-public class Input{
-	public Input input = new Input();
-	private Thread thread =null;
-	private boolean exist=false;
+class Input{
+	// --Commented out by Inspection (04/01/2018 17:32):public Input input = new Input();
+	// --Commented out by Inspection (04/01/2018 17:32):private Thread thread =null;
+	// --Commented out by Inspection (04/01/2018 17:32):private static boolean exist=false;
 	private static int x,y;
 	private static boolean ready;
 
@@ -19,7 +13,7 @@ public class Input{
 	public synchronized static Move inputMove(){
 		while(!ready){
 			try{Thread.yield();}catch (Exception e){out.println(e.getMessage());}
-		};
+		}
 		ready = false;
 		return new Move(x, y);
 	}
@@ -29,9 +23,11 @@ public class Input{
 		ready=true;
 	}
 
-	public static void test(){
-		System.out.println(inputMove());
-	}
+// --Commented out by Inspection START (04/01/2018 17:32):
+//	public static void test(){
+//		System.out.println(inputMove());
+//	}
+// --Commented out by Inspection STOP (04/01/2018 17:32)
 }
 
 

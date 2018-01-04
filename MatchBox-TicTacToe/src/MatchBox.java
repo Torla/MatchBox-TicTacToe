@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 
-public class MatchBox implements Serializable {
+class MatchBox implements Serializable {
 	public class Resign extends Exception{
-		public Resign(){
+		Resign(){
 			super("Computer resign");
 		}
 	}
@@ -16,35 +16,31 @@ public class MatchBox implements Serializable {
 
 
 	private class Option implements Serializable {
-		Move move;
+		final Move move;
 		int pebbles;
 
-		public Option(Move move, int pebbles) {
+		Option(Move move) {
 			this.move = move;
-			this.pebbles = pebbles;
+			this.pebbles = MatchBox.staringPebbles;
 		}
 
-		public Move getMove() {
+		Move getMove() {
 			return move;
 		}
 
-		public void setMove(Move move) {
-			this.move = move;
-		}
-
-		public int getPebbles() {
+		int getPebbles() {
 			return pebbles;
 		}
 
-		public void setPebbles(int pebbles) {
+		void setPebbles(int pebbles) {
 			this.pebbles = pebbles;
 		}
 
-		public void incPebbles() {
+		void incPebbles() {
 			pebbles++;
 		}
 
-		public void decPebbles() {
+		void decPebbles() {
 			pebbles--;
 		}
 
@@ -54,15 +50,15 @@ public class MatchBox implements Serializable {
 		}
 	}
 
-	private int state;
-	private ArrayList<Option> options;
-	private HashMap<Long,Option> lastUsed= new HashMap<>();
+	private final int state;
+	private final ArrayList<Option> options;
+	private final HashMap<Long,Option> lastUsed= new HashMap<>();
 
 	public MatchBox(int state) {
 		this.state = state;
-		options = new ArrayList<Option>();
+		options = new ArrayList<>();
 		for (Move move : new Board(state).possibleMoves()) {
-			options.add(new Option(move, staringPebbles));
+			options.add(new Option(move));
 		}
 	}
 
@@ -88,9 +84,9 @@ public class MatchBox implements Serializable {
 		return totalPebbles;
 	}
 
-	;
 
-	public void rewards(char x) {
+
+	public void rewards(char x, boolean trainingMode) {
 		if(!lastUsed.containsKey(Thread.currentThread().getId())) { //todo Strange bug, ugly workaround
 			System.out.println("!!!");
 			return;
@@ -106,18 +102,26 @@ public class MatchBox implements Serializable {
 				break;
 			case 'd':
 				o.incPebbles();
-				;
 				break;
 			case 'l':
 				o.decPebbles();
 				break;
 		}
-		if (o.getPebbles() < 0) o.setPebbles(0);
-		if (o.getPebbles() > 1000) for(Option i:options) i.setPebbles(i.getPebbles()/2);
+		if (o.getPebbles() > 100) for(Option i:options) i.setPebbles(i.getPebbles()/2);
+		if (o.getPebbles() <= 0) o.setPebbles(0);
+		if(trainingMode) for(Option i:options) if(i.getPebbles()==0) i.setPebbles(1);
 		lastUsed.remove(Thread.currentThread().getId());
 	}
 
-	;
+
+
+	public void eliminateIndecision(){
+		int max=0;
+		for(Option o:options)
+			if(o.getPebbles()>max) max=o.getPebbles();
+		final int m=max;
+		options.stream().filter(x->(x.getPebbles()<m/2)).forEach(x->x.setPebbles(0));
+	}
 
 	@Override
 	public String toString() {

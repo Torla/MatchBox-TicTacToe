@@ -5,11 +5,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowListener;
 import java.awt.event.WindowEvent;
 
-public class Window extends Frame implements WindowListener,ActionListener{
-	private JPanel jPanel;
+class Window extends Frame implements WindowListener,ActionListener{
+	private final JPanel jPanel;
 	private static final int dim = 500;
-	private Component[][] screen = new Component[3][3];
-	Font f = new Font("ciao",Font.BOLD,dim/3);
+	private final Component[][] screen = new Component[3][3];
+	private final Font f = new Font("ciao",Font.BOLD,dim/3);
 	public Window() throws HeadlessException {
 		super("prova");
 		jPanel=new JPanel(new FlowLayout());

@@ -1,16 +1,14 @@
 
 
 import java.util.Arrays;
-import java.util.stream.Collector;
 
-import static java.lang.System.out;
+class Train{
 
-public class Train{
+	private static MatchBoxBrain brain1;
+	private static MatchBoxBrain brain2;
 
-	static MatchBoxBrain brain1,brain2;
-
-	static final int numThreads = 4;
-	private static Thread[] threads = new Thread[numThreads];
+	private static final int numThreads = 8;
+	private static final Thread[] threads = new Thread[numThreads];
 	public static void main(String Argv[]){
 
 		for(int i=0;i<numThreads;i++) threads[i]=new Thread(new singleRun(Argv));
@@ -24,12 +22,16 @@ public class Train{
 			brain1 = MatchBoxBrain.load(Argv[0]);
 			brain2 = MatchBoxBrain.load(Argv[1]);
 		}
-			for (Thread t : threads) t.start();
+		brain1.setTrainingMode(true);
+		brain2.setTrainingMode(true);
+		for (Thread t : threads) t.start();
 			while(Arrays.stream(threads).filter(Thread::isAlive).count()!=0) try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+		brain1.eliminateIndecision();
+		brain2.eliminateIndecision();
 		Train.brain1.saveToDisk(Argv[0]);
 		Train.brain2.saveToDisk(Argv[1]);
 

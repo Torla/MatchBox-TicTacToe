@@ -1,18 +1,13 @@
-import javafx.print.Collation;
-
 import static java.lang.System.out;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class Board {
     private int m[][] = new int[3][3];
 
-	public Board(int[][] m) {
+	private Board(int[][] m) {
 		this.m = new int[3][3];
 		for(int i=0;i<m.length;i++){
 			for(int j=0;j<m[0].length;j++){
@@ -30,7 +25,7 @@ public class Board {
         }
     }
 
-    public void copy(Board b){
+    private void copy(Board b){
 	    this.m = new int[3][3];
 	    for(int i=0;i<m.length;i++){
 		    for(int j=0;j<m[0].length;j++){
@@ -41,7 +36,6 @@ public class Board {
 
     public Board (int hash){
 	    this.m = new int[3][3];
-	    int num=hash;
 	    for(int i=0;i<m.length;i++){
 		    for(int j=0;j<m[0].length;j++){
 			    this.m[i][j]=hash%3;
@@ -180,8 +174,7 @@ public class Board {
 
 	@Override
 	public boolean equals(Object b) {
-    	if(this.getClass()!=b.getClass()) return false;
-		return this.hashCode()==b.hashCode();
+		return this.getClass() == b.getClass() && this.hashCode() == b.hashCode();
 	}
 
 	public int gameState(){
@@ -193,7 +186,7 @@ public class Board {
 			count2=0;
 			for(int j=0;j<3;j++){
 				count+=m[i][j]*magicSquare[i][j];
-				
+
 				count2+=m[j][i]*magicSquare[j][i];
 			}
 			l.add(count);
@@ -207,7 +200,7 @@ public class Board {
 		else return 0;
 
 	}
-	public boolean isDraw(){
+	private boolean isDraw(){
 		for(int[] row:m){
 			for(int cell:row){
 				if(cell==0) return false;
@@ -233,14 +226,14 @@ public class Board {
 		}
 
 	}
-	public static HashSet<Board> generateAll(){
+	private static HashSet<Board> generateAll(){
 		HashSet<Board> retSet=new HashSet<>();
 		Board b=new Board();
 		generateAllR(0,0,b,retSet);
 		return retSet;
 	}
 	public static HashSet<Integer> generateAllHash() {
-		return generateAll().stream().map((x)->x.hashCode()).collect(Collectors.toCollection(HashSet<Integer>::new));
+		return generateAll().stream().map(Board::hashCode).collect(Collectors.toCollection(HashSet::new));
 
 	}
 	public ArrayList<Move> possibleMoves(){
@@ -265,8 +258,9 @@ public class Board {
 	public void show(Window w){
 		w.show(this.m);
 	}
+	@SuppressWarnings("unused")
 	static void test(){
-		Board b = new Board()
+		@SuppressWarnings("unused") Board b = new Board()
 				.writeMove(0,0,'x')
 				.writeMove(1,1,'x')
 				.writeMove(0,2,'x')

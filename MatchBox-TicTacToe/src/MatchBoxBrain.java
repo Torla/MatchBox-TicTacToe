@@ -1,40 +1,39 @@
 import java.io.*;
-import java.nio.file.attribute.UserDefinedFileAttributeView;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.Semaphore;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-public class MatchBoxBrain implements Serializable {
-	private Semaphore lock=new Semaphore(1);
-	private HashMap<Integer, MatchBox> matchBoxes;
+class MatchBoxBrain implements Serializable {
+	private final Semaphore lock=new Semaphore(1);
+	private final HashMap<Integer, MatchBox> matchBoxes;
 	private class Used implements Serializable{
-		public Used(MatchBox box, long threadId) {
+		Used(MatchBox box, long threadId) {
 			this.box = box;
 			this.threadId = threadId;
 		}
-		MatchBox box;
-		long threadId;
+		final MatchBox box;
+		final long threadId;
 
-		public MatchBox getBox() {
+		MatchBox getBox() {
 			return box;
 		}
 
-		public long getThreadId() {
+		long getThreadId() {
 			return threadId;
 		}
 	}
-	private ArrayList<Used> lastsUsed;
+	private final ArrayList<Used> lastsUsed;
 	public int numMatch=1;
-	transient public static Rand random = new Rand();
+	final transient public static Rand random = new Rand();
+	private transient boolean trainingMode = false;
 
 	public  MatchBoxBrain(){
-		matchBoxes = new HashMap<Integer, MatchBox>();
+		matchBoxes = new HashMap<>();
 		for(int state: Board.generateAllHash()){
 			matchBoxes.put(state,new MatchBox(state));
 		}
-		lastsUsed = new ArrayList<Used>();
+		lastsUsed = new ArrayList<>();
 	}
 
 	public Move move(Board b)throws MatchBox.Resign{
@@ -44,13 +43,13 @@ public class MatchBoxBrain implements Serializable {
 		return m.chooseMove();
 	}
 
-	public void  reward(char x){
-		while(lock.tryAcquire());
+	public void  reward(char x)  {
+		lock.tryAcquire();
 		numMatch++;
 		for (Used u : lastsUsed.stream()
 				.filter(l -> l.getThreadId() == Thread.currentThread().getId())
-				.collect(Collectors.toCollection(ArrayList<Used>::new))) {
-			u.getBox().rewards(x);
+				.collect(Collectors.toCollection(ArrayList::new))) { //todo error in concurrency
+			u.getBox().rewards(x, trainingMode);
 			lastsUsed.remove(u);
 		}
 		lock.release();
@@ -84,6 +83,13 @@ public class MatchBoxBrain implements Serializable {
 		return brain;
 	}
 
+	public void setTrainingMode(boolean trainingMode) {
+		this.trainingMode = trainingMode;
+	}
+
+	public void eliminateIndecision(){
+		for (MatchBox m:matchBoxes.values()) m.eliminateIndecision();
+	}
 	@Override
 	public String toString() {
 		return matchBoxes.toString()+'\n'+lastsUsed;
