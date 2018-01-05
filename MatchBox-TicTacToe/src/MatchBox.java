@@ -65,8 +65,10 @@ class MatchBox implements Serializable {
 	public Move chooseMove() throws Resign {
 		int totalPebbles = 0;
 		int r;
-		totalPebbles = getTotalPebbles(totalPebbles);
-		if (totalPebbles == 0) throw new Resign();
+		totalPebbles = getTotalPebbles();
+		if (totalPebbles == 0)
+			throw new Resign();
+
 		r = MatchBoxBrain.random.rand.nextInt(totalPebbles);
 		for (Option o : options) {
 			if (r < o.getPebbles()) {
@@ -76,10 +78,11 @@ class MatchBox implements Serializable {
 				r -= o.getPebbles();
 			}
 		}
-		return null;
+		throw new RuntimeException();
 	}
 
-	private int getTotalPebbles(int totalPebbles) {
+	private int getTotalPebbles() {
+		int totalPebbles=0;
 		for (Option o : options) totalPebbles += o.getPebbles();
 		return totalPebbles;
 	}
@@ -121,6 +124,7 @@ class MatchBox implements Serializable {
 			if(o.getPebbles()>max) max=o.getPebbles();
 		final int m=max;
 		options.stream().filter(x->(x.getPebbles()<m/2)).forEach(x->x.setPebbles(0));
+		options.stream().filter(x->(x.getPebbles()==1)).forEach(x->x.setPebbles(0));
 	}
 
 	@Override

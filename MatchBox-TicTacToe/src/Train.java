@@ -7,7 +7,7 @@ class Train{
 	private static MatchBoxBrain brain1;
 	private static MatchBoxBrain brain2;
 
-	private static final int numThreads = 8;
+	private static final int numThreads = 4;
 	private static final Thread[] threads = new Thread[numThreads];
 	public static void main(String Argv[]){
 

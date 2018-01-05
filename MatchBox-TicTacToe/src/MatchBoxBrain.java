@@ -1,7 +1,9 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.*;
 import java.util.stream.Collectors;
 
 class MatchBoxBrain implements Serializable {
@@ -37,21 +39,38 @@ class MatchBoxBrain implements Serializable {
 	}
 
 	public Move move(Board b)throws MatchBox.Resign{
+
 		if(!matchBoxes.containsKey(b.hashCode())) System.out.println(b);
 		MatchBox m= matchBoxes.get(b.hashCode());
+		try {
+			lock.acquire();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		lastsUsed.add(new Used(m,Thread.currentThread().getId()));
-		return m.chooseMove();
+		Move move = m.chooseMove();
+		lock.release();
+		return move;
 	}
 
-	public void  reward(char x)  {
-		lock.tryAcquire();
+	public void  reward(char x) {
+		try {
+			lock.acquire();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		numMatch++;
+	try{
+
 		for (Used u : lastsUsed.stream()
 				.filter(l -> l.getThreadId() == Thread.currentThread().getId())
 				.collect(Collectors.toCollection(ArrayList::new))) { //todo error in concurrency
 			u.getBox().rewards(x, trainingMode);
 			lastsUsed.remove(u);
 		}
+	}catch (ConcurrentModificationException e) {
+		e.printStackTrace();
+	}
 		lock.release();
 	}
 

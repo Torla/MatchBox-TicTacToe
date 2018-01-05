@@ -230,6 +230,23 @@ public class Board {
 		HashSet<Board> retSet=new HashSet<>();
 		Board b=new Board();
 		generateAllR(0,0,b,retSet);
+		for(Board board:new HashSet<Board>(retSet)){
+			int countX=0;
+			int countO=0;
+			for(int i=0;i<3;i++){
+				for(int j=0;j<3;j++){
+					switch (board.m[i][j]){
+						case 1:
+							countO++;
+							break;
+						case 2:
+							countX++;
+							break;
+					}
+				}
+			}
+			if(Math.abs(countO-countX)>1) retSet.remove(board);
+		}
 		return retSet;
 	}
 	public static HashSet<Integer> generateAllHash() {
